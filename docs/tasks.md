@@ -1,5 +1,5 @@
 
-- [ ] taggable для скоупов
-- [ ] подключить CarrierWave
+- [ ] taggable для тегов к посту
+- [x] подключить CarrierWave
 - [ ] тест модели
-- [ ] подключить FactoryBot
+- [x] подключить FactoryBot

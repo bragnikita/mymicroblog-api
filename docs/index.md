@@ -5,9 +5,13 @@ Index
 
 ## Knowlegebase
 
-[RSpec](rspec/rspec.md)
-[RSpec Active Record](rspec/active_record.md)
-[RSpec snippets](rspec/snippets.md)
+### annotate
+`annotate --exclude tests,fixtures,factories,serializers`
+
+### rspec
+`rspec spec/model/* --format documentation`
+
+
 
 ------
 [MDWiki syntax](http://dynalon.github.io/mdwiki/#!quickstart.md)
