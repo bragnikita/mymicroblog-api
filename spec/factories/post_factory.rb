@@ -15,7 +15,33 @@
 
 FactoryBot.define do
   factory :post do
+    sequence :title do |n|
+      "Daily ##{n}"
+    end
+    excerpt "Some short description of this day"
+    source_type 1
 
+    after(:create) do |post|
+      if post.post_contents.empty?
+        post.post_contents << create(:contents, post: post)
+      end
+    end
+
+    trait :with_cover do
+      after(:create) do |post|
+        post.cover = build(:image)
+      end
+    end
+
+    transient {
+      images_count 3
+    }
+
+    trait :with_images do
+      after(:create) do |post, eval|
+        post.images << create_list(:image, eval.images_count)
+      end
+    end
   end
 
 end

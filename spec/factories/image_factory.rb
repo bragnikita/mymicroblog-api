@@ -10,4 +10,15 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
+FactoryBot.define do
+  factory :image do
+    sequence :name do |n|
+      "illust_#{n}"
+    end
+    title {
+      "Wonderful photo #{name}"
+    }
+    type :illustration
+  end
+end
 

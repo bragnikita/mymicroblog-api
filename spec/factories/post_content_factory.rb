@@ -9,4 +9,10 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-
+FactoryBot.define do
+  factory :contents, class: PostContent do
+    content Faker::Lorem.paragraph
+    type "text"
+    association :post, factory: :post
+  end
+end

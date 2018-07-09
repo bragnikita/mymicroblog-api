@@ -46,7 +46,7 @@ class CreateMainTables < ActiveRecord::Migration[5.1]
                   foreign_key: {to_table: :images, on_delete: :nullify}
 
     create_table :post_contents do |t|
-      t.string :content
+      t.text :content
       t.references :post, foreign_key: {to_table: :posts, on_delete: :cascade}
       t.string :type
       t.timestamps

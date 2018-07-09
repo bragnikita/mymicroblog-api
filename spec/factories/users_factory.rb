@@ -18,7 +18,7 @@ FactoryBot.define do
      email {
        "#{username}@mail.com"
      }
-     admin true
+     admin false
 
      factory :admin do
        username 'admin'

@@ -30,7 +30,7 @@ ActiveRecord::Schema.define(version: 20180309102139) do
   end
 
   create_table "post_contents", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string "content"
+    t.text "content"
     t.bigint "post_id"
     t.string "type"
     t.datetime "created_at", null: false

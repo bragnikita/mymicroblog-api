@@ -11,5 +11,6 @@
 #
 
 class PostContent < ApplicationRecord
+  PostContent.inheritance_column = 'post_content_type'
   belongs_to :post, class_name: 'Post'
 end

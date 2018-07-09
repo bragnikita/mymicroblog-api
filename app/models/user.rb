@@ -14,6 +14,12 @@ class User < ApplicationRecord
   validates :password, presence: true
   validates :email, presence: true, if: :is_admin?
 
+  private
+
+  def is_admin?
+    self.admin
+  end
+
   # has_many :characters, class_name: "Character", :dependent => :nullify, :foreign_key => "creator_id", :inverse_of => 'creator'
   # has_many :character_lists, class_name: "CharacterList", dependent: :destroy, :inverse_of => 'owner'
   # has_many :scripts, class_name: "Script", dependent: :restrict_with_error, :inverse_of => 'owner'
