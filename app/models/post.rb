@@ -20,6 +20,13 @@ class Post < ApplicationRecord
   belongs_to :cover, class_name: 'Image', optional: true
 
   enum visability_mode: [:draft, :visible_private, :visible_public]
+  enum source_type: [:html, :markdown]
 
-
+  def self.build_empty
+    post = Post.new
+    post.post_contents.build(type: 'body')
+    post.markdown!
+    post.draft!
+    post
+  end
 end

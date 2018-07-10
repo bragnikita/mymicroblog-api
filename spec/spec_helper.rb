@@ -14,6 +14,7 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require 'rspec/collection_matchers'
+require "rspec/json_expectations"
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -95,4 +96,10 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 =end
+
+  config.define_derived_metadata(:file_path => %r{spec/controllers}) do |meta|
+    meta[:aggregate_failures] = true
+  end
+
+  config.include RSpec::JsonExpectations::Matchers
 end

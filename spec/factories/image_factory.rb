@@ -11,14 +11,28 @@
 #  updated_at :datetime         not null
 #
 FactoryBot.define do
+  sequence :image_id do |n|
+    "#{n}"
+  end
   factory :image do
-    sequence :name do |n|
-      "illust_#{n}"
-    end
+    name { "illust_#{generate(:image_id)}" }
     title {
       "Wonderful photo #{name}"
     }
     type :illustration
+
+    transient {
+      image_path 'common.jpg'
+    }
+
+    link {
+      File.open(Rails.root.join('spec', 'fixtures', 'images', image_path))
+    }
+
+    factory :common_image do
+      type 'common'
+    end
+
   end
 end
 

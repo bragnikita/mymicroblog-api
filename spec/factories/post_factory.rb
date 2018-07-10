@@ -23,7 +23,7 @@ FactoryBot.define do
 
     after(:create) do |post|
       if post.post_contents.empty?
-        post.post_contents << create(:contents, post: post)
+        post.post_contents << create(:contents, post: post, type: 'body')
       end
     end
 
@@ -41,6 +41,13 @@ FactoryBot.define do
       after(:create) do |post, eval|
         post.images << create_list(:image, eval.images_count)
       end
+    end
+
+    factory :public_post do
+      visability_mode Post.visability_modes[:visible_public]
+    end
+    factory :private_post do
+      visability_mode Post.visability_modes[:visible_private]
     end
   end
 

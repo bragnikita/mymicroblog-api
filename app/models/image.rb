@@ -12,5 +12,14 @@
 #
 
 class Image < ApplicationRecord
+  mount_uploader :link, ImageUploader
+
+  after_initialize :set_defaults
+
+  private
+
+  def set_defaults
+    self.type = 'common' if self.type.nil?
+  end
 
 end
