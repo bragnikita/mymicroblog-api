@@ -1,3 +1,21 @@
+# == Schema Information
+#
+# Table name: posts
+#
+#  id               :bigint(8)        not null, primary key
+#  title            :string(255)
+#  excerpt          :text(65535)
+#  slug             :string(255)
+#  status           :integer          default("draft")
+#  published_at     :datetime
+#  source_type      :integer
+#  visability_mode  :integer          default("hidden")
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  original_post_id :bigint(8)
+#  cover_id         :bigint(8)
+#
+
 require 'rails_helper'
 
 RSpec.describe Post, type: :model do

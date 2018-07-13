@@ -38,16 +38,26 @@ ActiveRecord::Schema.define(version: 20180309102139) do
     t.index ["post_id"], name: "index_post_contents_on_post_id"
   end
 
+  create_table "post_links", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "slug"
+    t.bigint "post_id"
+    t.index ["post_id"], name: "index_post_links_on_post_id"
+  end
+
   create_table "posts", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "title"
     t.text "excerpt"
-    t.datetime "datetime_of_placement"
+    t.string "slug"
+    t.integer "status", default: 0
+    t.datetime "published_at"
     t.integer "source_type"
     t.integer "visability_mode", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "original_post_id"
     t.bigint "cover_id"
     t.index ["cover_id"], name: "index_posts_on_cover_id"
+    t.index ["original_post_id"], name: "index_posts_on_original_post_id"
   end
 
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -58,5 +68,7 @@ ActiveRecord::Schema.define(version: 20180309102139) do
   end
 
   add_foreign_key "post_contents", "posts", on_delete: :cascade
+  add_foreign_key "post_links", "posts"
   add_foreign_key "posts", "images", column: "cover_id", on_delete: :nullify
+  add_foreign_key "posts", "posts", column: "original_post_id", on_delete: :cascade
 end

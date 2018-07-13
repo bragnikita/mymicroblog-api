@@ -3,6 +3,7 @@ class CreateMainTables < ActiveRecord::Migration[5.1]
   def clear
     drop_table :post_contents if table_exists? :post_contents
     drop_table :images_posts if table_exists? :images_posts
+    drop_table :post_links if table_exists? :post_links
     drop_table :posts if table_exists? :posts
     drop_table :images if table_exists? :images
     drop_table :users if table_exists? :users
@@ -29,10 +30,22 @@ class CreateMainTables < ActiveRecord::Migration[5.1]
     create_table :posts do |t|
       t.string :title
       t.text :excerpt
-      t.datetime :datetime_of_placement
+      t.string :slug
+      t.integer :status, default: 0
+      t.datetime :published_at
       t.integer :source_type
       t.integer :visability_mode, default: 0
       t.timestamps
+    end
+
+    add_reference :posts, :original_post,
+                  references: :posts, null: true,
+                  foreign_key: { to_table: :posts, on_delete: :cascade},
+                  index: true
+
+    create_table :post_links do |t|
+      t.string :slug
+      t.references :post, foreign_key: { to_table: :posts, on_delete: :restrict}
     end
 
     create_join_table :images, :posts do |t|

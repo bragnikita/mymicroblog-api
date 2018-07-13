@@ -4,12 +4,13 @@ require 'rails_helper'
 # Table name: post_contents
 #
 #  id         :bigint(8)        not null, primary key
-#  content    :string(255)
+#  content    :text(65535)
 #  post_id    :bigint(8)
 #  type       :string(255)
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
+
 RSpec.describe PostContent, type: :model do
   describe "CRUD" do
     subject(:post) {

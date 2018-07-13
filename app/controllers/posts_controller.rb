@@ -6,13 +6,31 @@ class PostsController < ApplicationController
 
 
   def index
+    filter = params[:show] || 'none'
+    posts = Post.order(:datetime_of_placement => :desc)
     if authorized?
-      posts = Post.where(visability_mode: [:visible_private, :visible_public])
-                .order(:datetime_of_placement => :desc)
+      posts = posts.not.where(visability_mode: [:draft])
+      case filter
+        when 'public'
+          posts = posts.where(visability_mode: [:visible_public])
+        when 'published'
+          posts = posts.not.where(visability_mode: [:hidden]).not.where(status: [:draft])
+        when 'unpublished'
+          posts = posts.where(visability_mode: [:hidden])
+        else
+          posts = posts
+      end
     else
-      posts = Post.where(visability_mode: [:visible_public])
-                .order(:datetime_of_placement => :desc)
+      posts = posts.where(visability_mode: [:public])
+      case filter
+        when 'public'
+        when 'published'
+          posts = posts
+        else
+          raise ApiErrors::Forbidden
+      end
     end
+
     posts = posts.includes(:cover)
     render json: {
       items: posts.map {|p| serialize_post(p)}
@@ -28,15 +46,15 @@ class PostsController < ApplicationController
     }
   end
 
-  def new
+  def create
     @post = Post.build_empty
     @post.save!
-    render json: serialize_post_editing(@post), status: :created
+    render json: {object: serialize_post_editing(@post)}, status: :created
   end
 
   def update
     # @post.update!(post_update_params)
-    render json: serialize_post_editing(@post), status: :ok
+    render json: {object: serialize_post_editing(@post)}, status: :ok
   end
 
   def destroy
@@ -61,7 +79,8 @@ class PostsController < ApplicationController
       title: post.title,
       excerpt: post.excerpt,
       published_at: post.datetime_of_placement,
-      cover: post.cover&.link&.url
+      visability_mode: post.visability_mode,
+      cover_url: post.cover&.link&.url
     }
   end
 
@@ -73,6 +92,7 @@ class PostsController < ApplicationController
       published_at: post.datetime_of_placement,
       cover: post.cover&.link&.url,
       body: serialize_post_body(post),
+      visability: post.visability_mode
     }
   end
 
@@ -84,4 +104,5 @@ class PostsController < ApplicationController
   def serialize_post_editing(post)
     serialize_post_read(post)
   end
+
 end
