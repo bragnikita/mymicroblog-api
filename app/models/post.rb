@@ -17,14 +17,18 @@
 #
 
 class Post < ApplicationRecord
-  has_many :image_links, class_name: 'ImageOfPost', dependent: :destroy
+  has_many :image_links, class_name: 'ImageOfPost', dependent: :destroy, autosave: true
   has_many :images, class_name: 'Image', through: :image_links
   has_many :post_contents, class_name: 'PostContent'
   belongs_to :cover, class_name: 'Image', optional: true
   belongs_to :original_post, class_name: 'Post', optional: true
   has_one :post_link, class_name: 'PostLink'
 
-  validates :slug, uniqueness: true
+  validates :slug, uniqueness: { scope: :status }, presence: true,
+            unless: Proc.new { |p| p.draft?}
+  validates :status, presence: true
+  validates :visability_mode, presence: true
+  validates :source_type, presence: true
 
   enum visability_mode: [:hidden, :visible_private, :visible_public]
   enum status: [:draft, :published]
@@ -37,4 +41,13 @@ class Post < ApplicationRecord
     post.draft!
     post
   end
+
+  def self.today_posts
+    Post.where("DATE(created_at) = DATE(NOW())")
+  end
+
+  def body_source
+    self.post_contents.find_by(type: 'body_source')
+  end
+
 end

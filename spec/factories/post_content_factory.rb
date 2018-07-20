@@ -13,7 +13,7 @@
 FactoryBot.define do
   factory :contents, class: PostContent do
     content Faker::Lorem.paragraph
-    type "text"
+    type "body_source"
     association :post, factory: :post
   end
 end

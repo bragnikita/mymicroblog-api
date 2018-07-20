@@ -14,6 +14,7 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require 'rspec/collection_matchers'
+require 'forwardable'
 require "rspec/json_expectations"
 
 RSpec.configure do |config|

@@ -12,6 +12,7 @@
 #
 
 class Image < ApplicationRecord
+  Image.inheritance_column = 'image_type'
   mount_uploader :link, ImageUploader
 
   after_initialize :set_defaults

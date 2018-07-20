@@ -66,4 +66,18 @@ RSpec.describe Post, type: :model do
       expect(post.images).to have_exactly(2).items
     end
   end
+
+  describe "Methods" do
+    describe "self.today_posts" do
+      before {
+        create_list(:post, 2)
+        yesterday_post = build(:post)
+        yesterday_post.created_at = Date.yesterday
+        yesterday_post.save
+      }
+      it "should select 2 posts" do
+        expect(Post.today_posts).to have(2).items
+      end
+    end
+  end
 end

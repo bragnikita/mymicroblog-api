@@ -40,7 +40,7 @@ group :test do
   gem 'rspec-collection_matchers'
   gem "faker", "~> 1.8"
   gem "database_cleaner"
-  gem "rspec-json_expectations"
+  gem 'rspec-json_expectations'
 end
 
 group :development do

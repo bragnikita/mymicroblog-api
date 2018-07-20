@@ -23,13 +23,15 @@ FactoryBot.define do
     end
     excerpt "Some short description of this day"
     source_type 1
+    status Post.statuses[:published]
+    visability_mode Post.visability_modes[:visible_public]
     sequence :slug do |n|
       "/path_#{n}"
     end
 
     after(:create) do |post|
       if post.post_contents.empty?
-        post.post_contents << create(:contents, post: post, type: 'body_src')
+        post.post_contents << create(:contents, post: post, type: 'body_source')
       end
     end
 
@@ -59,13 +61,18 @@ FactoryBot.define do
       visability_mode Post.visability_modes[:hidden]
     end
   end
-  factory :draft do
+  factory :draft, class: Post do
     source_type 1
     visability_mode Post.visability_modes[:hidden]
     status Post.statuses[:draft]
     transient {
       from nil
     }
+    after(:create) do |post|
+      if post.post_contents.empty?
+        post.post_contents << create(:contents, post: post, type: 'body_source')
+      end
+    end
     after(:build) do |post, eval|
       unless eval.from.nil?
         post.title = eval.from.title
