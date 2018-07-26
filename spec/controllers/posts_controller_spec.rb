@@ -1,14 +1,32 @@
 require 'rails_helper'
 
+def be_post_for_editing
+  a_hash_including(
+    :id, :title, :excerpt, :slug, :published_at,
+    :source_type, :visability_mode, :cover, :body, :status => 'draft'
+  )
+end
+
+def be_post_for_listing
+  a_hash_including(
+    :id, :title, :excerpt, :slug, :status, :published_at, :visability_mode,
+    :cover
+  )
+end
+
+def be_post_for_display
+  a_hash_including(
+    :id, :title, :excerpt, :slug, :status, :published_at, :visability_mode,
+    :cover, :body
+  )
+end
+
 RSpec.describe PostsController, type: :request do
+
 
   describe 'index' do
     before(:context) {
-      create_list(:public_post, 5)
-      create(:private_post)
-      create(:hidden_post)
-      create(:draft)
-      create(:draft, from: create(:public_post))
+      create_list(:public_post, 6)
     }
     describe 'fetch all 6 posts' do
       before {
@@ -17,7 +35,7 @@ RSpec.describe PostsController, type: :request do
 
       it 'fetches list of all posts' do
         expected = {
-          :items => all(a_hash_including(:id, :title, :excerpt, :published_at))
+          :items => all(be_post_for_listing)
         }
         get '/posts'
 
@@ -27,73 +45,176 @@ RSpec.describe PostsController, type: :request do
       end
     end
 
-    describe 'fetch only public posts' do
-      it 'fetches 5 public posts' do
+    describe 'unauthorized' do
+      it 'fetches public posts' do
+        get '/posts?show=public'
+        expect(response).to have_http_status(200)
+      end
+      it 'gets 403 error' do
         get '/posts'
-        expect(getBody[:items]).to have(5).items
+        expect(response).to have_http_status(403)
       end
     end
 
 
-    after {
-      logout
-    }
   end
 
-  # describe 'show' do
-  #   describe 'public post' do
-  #     subject! {
-  #       create(:public_post, title: 'My day')
-  #     }
-  #     it 'should display public post' do
-  #       expected = {
-  #         :object => a_hash_including(:id => anything, :title => 'My day', :body => kind_of(String))
-  #       }
-  #       get "/posts/#{subject.id}"
-  #       expect(getBody).to include(expected)
-  #       expect(response).to have_http_status(200)
-  #     end
-  #
-  #     it 'should return 401 if trying to get non-existed post' do
-  #       get "/posts/#{subject.id + 1}"
-  #       expect(response).to have_http_status(:not_found)
-  #     end
-  #   end
-  #
-  #   describe 'private post' do
-  #     subject! {
-  #       create(:private_post)
-  #     }
-  #     it 'should return 403 if trying to get private post' do
-  #       get "/posts/#{subject.id}"
-  #       expect(response).to have_http_status(:forbidden)
-  #     end
-  #   end
-  # end
-  #
-  # describe 'create' do
-  #   it 'should create draft post' do
-  #     expected = {
-  #       :object => a_hash_including(
-  #         :id => anything,
-  #         :title => '',
-  #         :visability => 'draft'),
-  #     }
-  #     login
-  #     post '/posts'
-  #     expect(getBody).to include(expected)
-  #     expect(response).to have_http_status(:created)
-  #   end
-  #   it 'should return 403 if not authorized' do
-  #     post '/posts'
-  #     expect(response).to have_http_status(:forbidden)
-  #   end
-  # end
+  describe "/posts/:id/edit" do
+    describe "if post exists" do
+      let(:target) {
+        create(:post, :with_cover, :with_images,
+               title: 'My day',
+               excerpt: 'Long long time ago',
+               published_at: Time.new(2007, 11, 19, 8, 37, 48, "-06:00"),
+               visability_mode: Post.visability_modes[:visible_public]
+        )
+      }
+      before {
+        login
+      }
+      it 'fetches post to edit' do
+        get "/posts/#{target.id}/edit"
+        expect(response).to have_http_status(200)
+        expect(getBody[:object]).to be_post_for_editing
+      end
+      it 'returns expected parametes' do
+        get "/posts/#{target.id}/edit"
+        expect(getBody[:object]).to a_hash_including({
+                                                       :id => be_a(Numeric),
+                                                       :title => target.title,
+                                                       :excerpt => target.excerpt,
+                                                       :published_at => '2007-11-19T14:37:48.000Z',
+                                                       :cover => a_hash_including(:id, :url),
+                                                       :visability_mode => 'visible_public',
+                                                       :body => be_a(String),
+                                                       :images => all(
+                                                         a_hash_including(:id, :url, :link)
+                                                       ).and(have(3).items)
+                                                     })
+      end
+    end
 
-  describe 'update' do
-    it 'should update title and content of the post'
-    it 'should return 403 if not authorized'
-    it 'should return 401 if trying to get non-existed post'
+    describe "if post not exists" do
+      before {
+        login
+      }
+      it 'fetches post to edit' do
+        get "/posts/-1/edit"
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+    describe "if unauthorized" do
+      it 'gets 403 error' do
+        get '/posts/1/edit'
+        expect(response).to have_http_status(403)
+      end
+    end
+  end
+
+  describe "POST /posts" do
+    describe "returns new post" do
+      before {
+        login
+      }
+      it 'should return empty post' do
+        post '/posts'
+        expect(response).to have_http_status(201)
+        expect(getBody[:object]).to be_post_for_editing
+      end
+    end
+    describe "if unauthorized" do
+      it 'gets 403 error' do
+        post '/posts'
+        expect(response).to have_http_status(403)
+      end
+    end
+  end
+
+  describe "PATCH /posts/:id" do
+    describe "attributes passed" do
+      let(:target) {
+        create(:draft)
+      }
+      let(:images) {
+        create_list(:image, 2)
+      }
+      let(:body) {
+        "new body"
+      }
+      let(:cover) {
+        create(:image)
+      }
+      before {
+        login
+      }
+      before {
+        patch "/posts/#{target.id}", params: {
+          post: {
+            title: 'New Title',
+            excerpt: 'New excerpt',
+            slug: '/new_slug',
+            published_at: Time.new(2007, 11, 19, 8, 37, 48, "-06:00"),
+            source_type: 'markdown',
+            visability_mode: 'visible_public',
+            cover_id: cover.id,
+          },
+          images: images.map {|i| {image_id: i.id}},
+          body: body
+        }
+      }
+      subject { getBody[:object] }
+      it "should update post attributes" do
+        is_expected.to be_post_for_editing
+        is_expected.to a_hash_including(
+                         {
+                           title: 'New Title',
+                           excerpt: 'New excerpt',
+                           slug: '/new_slug',
+                           cover: be_present
+                         })
+        expect(response).to have_http_status(200)
+      end
+    end
+  end
+
+  describe "PUT /posts/:id/content/:preview" do
+    let(:target) {
+      create(:post)
+    }
+
+    before {
+      login
+    }
+
+    it "should update post's content" do
+      put "/posts/#{target.id}/content", params: { body: "new content" }
+
+      expect(response).to have_http_status(200)
+    end
+
+    it "should return preview" do
+      put "/posts/#{target.id}/content/preview", params: { body: "new content" }
+
+      expect(response).to have_http_status(200)
+      expect(response.body).not_to be_blank
+    end
+  end
+
+  describe "GET /posts/:id/preview" do
+    before {
+      login
+    }
+    let(:target) {
+      post = create(:post)
+      create(:contents, type: 'body_result', content: 'result content', post: post)
+      post
+    }
+    it "should return transformed content" do
+      get "/posts/#{target.id}/preview"
+
+      expect(response).to have_http_status(200)
+      expect(response.body).to eq('result content')
+    end
   end
 
   describe 'delete' do
@@ -101,5 +222,9 @@ RSpec.describe PostsController, type: :request do
     it 'should return 403 if not authorized'
     it 'should return 401 if trying to get non-existed post'
   end
+
+  after {
+    logout
+  }
 
 end

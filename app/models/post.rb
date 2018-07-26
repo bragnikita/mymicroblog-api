@@ -50,4 +50,12 @@ class Post < ApplicationRecord
     self.post_contents.find_by(type: 'body_source')
   end
 
+  def body_result
+    self.post_contents.find_by(type: 'body_result')
+  end
+
+  def build_body_result(params = {})
+    self.post_contents.build(params.merge(type: 'body_result'))
+  end
+
 end

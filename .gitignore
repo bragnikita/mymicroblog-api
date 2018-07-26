@@ -45,3 +45,4 @@ bower.json
 
 .idea
 *.iml
+public/uploads/

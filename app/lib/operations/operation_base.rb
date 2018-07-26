@@ -1,7 +1,11 @@
 module Operations
   class OperationBase
-    def initialize
+    include ActiveModel::Model
+
+    def initialize(attributes = {})
+      assign_attributes attributes
       @called = false
+      super(attributes)
     end
 
     def call

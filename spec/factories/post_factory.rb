@@ -24,6 +24,7 @@ FactoryBot.define do
     excerpt "Some short description of this day"
     source_type 1
     status Post.statuses[:published]
+    published_at Time.now
     visability_mode Post.visability_modes[:visible_public]
     sequence :slug do |n|
       "/path_#{n}"
@@ -37,7 +38,8 @@ FactoryBot.define do
 
     trait :with_cover do
       after(:create) do |post|
-        post.cover = build(:image)
+        post.cover = create(:image)
+        post.save
       end
     end
 
