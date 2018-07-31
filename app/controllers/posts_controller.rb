@@ -3,7 +3,7 @@ class PostsController < ApplicationController
 
   before_action :authenticate
   before_action :authorize, :except => [:index, :show]
-  before_action :set_post, :only => [:show, :update, :destroy, :update_content, :preview]
+  before_action :set_post, :only => [:show, :update, :destroy, :update_content, :preview ]
 
 
   def index
@@ -74,6 +74,10 @@ class PostsController < ApplicationController
     render status: :ok
   end
 
+  def update_attribute
+    PostUpdate.new(id: params[:post_id], post_attributes: update_post_params ).call
+    render status: :ok
+  end
 
   private
 
@@ -94,7 +98,7 @@ class PostsController < ApplicationController
 end
 
 def post_update_params
-  params.require(:post).permit(:title, :excerpt, :body, :cover, :source_type, :datetime_of_placement)
+  params.require(:post).permit(:title, :excerpt, :body, :cover, :source_type, :datetime_of_placement, :slug)
 end
 
 def serialize_listing(post)

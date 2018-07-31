@@ -2,7 +2,7 @@ class CreateMainTables < ActiveRecord::Migration[5.1]
 
   def clear
     drop_table :post_contents if table_exists? :post_contents
-    drop_table :images_posts if table_exists? :images_posts
+    drop_table :images_of_posts if table_exists? :images_of_posts
     drop_table :post_links if table_exists? :post_links
     drop_table :posts if table_exists? :posts
     drop_table :images if table_exists? :images
@@ -48,10 +48,11 @@ class CreateMainTables < ActiveRecord::Migration[5.1]
       t.references :post, foreign_key: { to_table: :posts, on_delete: :restrict}
     end
 
-    create_join_table :images, :posts do |t|
-      t.index :image_id
-      t.index :post_id
+    create_table :images_of_posts do |t|
+      t.references :image, foreign_key: { to_table: :images, on_delete: :cascade}
+      t.references :post, foreign_key: { to_table: :posts, on_delete: :cascade}
       t.string :link_name
+      t.integer :index
     end
 
     add_reference :posts, :cover,

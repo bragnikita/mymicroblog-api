@@ -158,7 +158,7 @@ RSpec.describe PostsController, type: :request do
             visability_mode: 'visible_public',
             cover_id: cover.id,
           },
-          images: images.map {|i| {image_id: i.id}},
+          images: images.map.with_index {|i, index| {image_id: i.id, index: index, label: "label#{index}"}},
           body: body
         }
       }
@@ -217,10 +217,37 @@ RSpec.describe PostsController, type: :request do
     end
   end
 
-  describe 'delete' do
-    it 'should destroy the post'
-    it 'should return 403 if not authorized'
-    it 'should return 401 if trying to get non-existed post'
+
+  describe 'DELETE /posts/:id' do
+    let(:target) {
+      create(:post)
+    }
+    before {
+      Operations::PostOperations::PostEdit.new(id: target.id).call
+      login
+    }
+    it 'should destroy the post' do
+      delete "/posts/#{target.id}"
+      expect(response).to have_http_status(:ok)
+      expect(Post.exists?(target.id)).to be_falsey
+    end
+  end
+
+  describe '/PATCH /posts/:id/property' do
+    let(:target) {
+      create(:post, visability_mode: 'visible_private')
+    }
+    before {
+      login
+    }
+    it "expected to change visability mode of the post" do
+      patch "/posts/#{target.id}/property", params: {
+        post: { visability_mode: 'visible_public' }
+      }
+      target.reload
+      expect(response).to have_http_status(:ok)
+      expect(target).to have_attributes(:visability_mode => 'visible_public')
+    end
   end
 
   after {

@@ -21,6 +21,15 @@ ActiveRecord::Schema.define(version: 20180309102139) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "images_of_posts", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.bigint "image_id"
+    t.bigint "post_id"
+    t.string "link_name"
+    t.integer "index"
+    t.index ["image_id"], name: "index_images_of_posts_on_image_id"
+    t.index ["post_id"], name: "index_images_of_posts_on_post_id"
+  end
+
   create_table "images_posts", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.bigint "image_id", null: false
     t.bigint "post_id", null: false
@@ -67,6 +76,8 @@ ActiveRecord::Schema.define(version: 20180309102139) do
     t.boolean "admin", default: false
   end
 
+  add_foreign_key "images_of_posts", "images", on_delete: :cascade
+  add_foreign_key "images_of_posts", "posts", on_delete: :cascade
   add_foreign_key "post_contents", "posts", on_delete: :cascade
   add_foreign_key "post_links", "posts"
   add_foreign_key "posts", "images", column: "cover_id", on_delete: :nullify

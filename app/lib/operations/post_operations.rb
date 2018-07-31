@@ -161,8 +161,9 @@ module Operations
           if old_image_ids.include?(i[:image_id])
             update = get_post.image_links.find_by(image_id: i[:image_id])
             update.link_name = i[:link]
+            update.index = i[:index]
           else
-            get_post.image_links.build({image_id: i[:image_id], link_name: i[:link]})
+            get_post.image_links.build({image_id: i[:image_id], link_name: i[:link], index: i[:index]})
           end
         }
         get_post.save!

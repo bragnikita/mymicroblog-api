@@ -30,6 +30,12 @@ FactoryBot.define do
       "/path_#{n}"
     end
 
+
+    transient {
+      images_count 3
+      linked_images []
+    }
+
     after(:create) do |post|
       if post.post_contents.empty?
         post.post_contents << create(:contents, post: post, type: 'body_source')
@@ -43,13 +49,17 @@ FactoryBot.define do
       end
     end
 
-    transient {
-      images_count 3
-    }
-
     trait :with_images do
       after(:create) do |post, eval|
-        post.images << create_list(:image, eval.images_count)
+        if eval.linked_images.empty?
+          (1..eval.images_count).each_with_index do |link, index|
+            post.images << create(:image)
+          end
+        else
+          eval.linked_images.each_with_index do |link, index|
+            post.image_links.create(link_name: link, image: create(:image), index: index)
+          end
+        end
       end
     end
 
