@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 20180309102139) do
 
-  create_table "images", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "images", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string "link"
     t.string "name"
     t.string "title"
@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 20180309102139) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "images_of_posts", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "images_of_posts", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.bigint "image_id"
     t.bigint "post_id"
     t.string "link_name"
@@ -30,15 +30,7 @@ ActiveRecord::Schema.define(version: 20180309102139) do
     t.index ["post_id"], name: "index_images_of_posts_on_post_id"
   end
 
-  create_table "images_posts", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.bigint "image_id", null: false
-    t.bigint "post_id", null: false
-    t.string "link_name"
-    t.index ["image_id"], name: "index_images_posts_on_image_id"
-    t.index ["post_id"], name: "index_images_posts_on_post_id"
-  end
-
-  create_table "post_contents", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "post_contents", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.text "content"
     t.bigint "post_id"
     t.string "type"
@@ -47,13 +39,13 @@ ActiveRecord::Schema.define(version: 20180309102139) do
     t.index ["post_id"], name: "index_post_contents_on_post_id"
   end
 
-  create_table "post_links", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "post_links", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string "slug"
     t.bigint "post_id"
     t.index ["post_id"], name: "index_post_links_on_post_id"
   end
 
-  create_table "posts", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "posts", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string "title"
     t.text "excerpt"
     t.string "slug"
@@ -69,7 +61,7 @@ ActiveRecord::Schema.define(version: 20180309102139) do
     t.index ["original_post_id"], name: "index_posts_on_original_post_id"
   end
 
-  create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string "username", null: false
     t.string "password", null: false
     t.string "email"

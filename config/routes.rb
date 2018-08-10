@@ -14,4 +14,8 @@ Rails.application.routes.draw do
     post '/posts/:post_id/images', action: :create_and_attach_post
     get '/posts/:post_id/images', action: :get_post_images
   end
+
+  controller :developer do
+    get '/dev/posts', action: :list_all_posts
+  end
 end

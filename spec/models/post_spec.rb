@@ -17,6 +17,7 @@
 #
 
 require 'rails_helper'
+require 'database_cleaner'
 
 RSpec.describe Post, type: :model do
   describe "CRUD" do
@@ -69,7 +70,12 @@ RSpec.describe Post, type: :model do
 
   describe "Methods" do
     describe "self.today_posts" do
+      # before {
+      #   DatabaseCleaner.strategy = :truncation
+      #   DatabaseCleaner.clean
+      # }
       before {
+        # assert Post.count == 0
         create_list(:post, 2)
         yesterday_post = build(:post)
         yesterday_post.created_at = Date.yesterday

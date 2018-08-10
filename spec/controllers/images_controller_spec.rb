@@ -3,6 +3,9 @@ require 'rails_helper'
 RSpec.describe ImagesController, type: :request do
 
   describe 'POST /images' do
+    before {
+      login
+    }
     describe 'when new image uploaded' do
       let(:file) {
         fixture_file_upload('images/common.jpg', 'image/jpg')
@@ -23,6 +26,9 @@ RSpec.describe ImagesController, type: :request do
   end
 
   describe 'POST /posts/:post_id/images/' do
+    before {
+      login
+    }
     describe 'when new image uploaded during post editing' do
       let(:target) {
         create(:draft)
@@ -63,6 +69,9 @@ RSpec.describe ImagesController, type: :request do
   end
 
   describe "GET /posts/:post_id/images" do
+    before {
+      logout
+    }
 
     let(:target) { create(:post, :with_images , linked_images: %w{ illust1 illust2 illust3}) }
 

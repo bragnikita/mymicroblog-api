@@ -11,11 +11,11 @@
 #  updated_at :datetime         not null
 #
 FactoryBot.define do
-  sequence :image_id do |n|
+  sequence :image_id_sec do |n|
     "#{n}"
   end
   factory :image do
-    name { "illust_#{generate(:image_id)}" }
+    name { "illust_#{generate(:image_id_sec)}" }
     title {
       "Wonderful photo #{name}"
     }

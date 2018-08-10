@@ -73,7 +73,7 @@ RSpec.describe 'PostOperations', type: :model do
   end
 
   describe "PostSelect" do
-    before(:context) {
+    before(:each) {
       create_list(:post, 2)
       create_list(:private_post, 2)
       create_list(:hidden_post, 4)
